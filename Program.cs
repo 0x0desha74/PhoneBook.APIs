@@ -1,9 +1,14 @@
 
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using PhoneBook.Repository.Data;
+using System.Threading.Tasks;
+
 namespace PhoneBook.APIs
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -13,8 +18,29 @@ namespace PhoneBook.APIs
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            {
+                var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection String Not Found");
+                options.UseNpgsql(connectionString);
+            });
             var app = builder.Build();
+
+            var scope = app.Services.CreateScope();
+            var services = scope.ServiceProvider;
+            var loggerFactory = services.GetRequiredService<ILoggerFactory>();
+            try
+            {
+                var context = services.GetRequiredService<ApplicationDbContext>();
+                await context.Database.MigrateAsync();
+
+            }
+            catch (Exception ex)
+            {
+
+                var logger = loggerFactory.CreateLogger<Program>();
+                logger.LogError(ex, "An Error Occurred During Migration");
+            }
+
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

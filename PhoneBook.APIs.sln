@@ -5,6 +5,12 @@ VisualStudioVersion = 17.13.35806.99 d17.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhoneBook.APIs", "PhoneBook.APIs.csproj", "{E9D14863-849E-4B2E-A336-981C491FD3E0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhoneBook.Core", "..\PhoneBook.Core\PhoneBook.Core.csproj", "{6FB72FFC-C3BB-4126-A84B-D593ED024705}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhoneBook.Repository", "..\PhoneBook.Repository\PhoneBook.Repository.csproj", "{576B3446-89FC-40F3-9AD3-5C86E964FE13}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhoneBook.Service", "..\PhoneBook.Service\PhoneBook.Service.csproj", "{6083A16D-DAAD-47F9-AFC7-4EE9951F8A79}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +21,18 @@ Global
 		{E9D14863-849E-4B2E-A336-981C491FD3E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E9D14863-849E-4B2E-A336-981C491FD3E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E9D14863-849E-4B2E-A336-981C491FD3E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6FB72FFC-C3BB-4126-A84B-D593ED024705}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FB72FFC-C3BB-4126-A84B-D593ED024705}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FB72FFC-C3BB-4126-A84B-D593ED024705}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FB72FFC-C3BB-4126-A84B-D593ED024705}.Release|Any CPU.Build.0 = Release|Any CPU
+		{576B3446-89FC-40F3-9AD3-5C86E964FE13}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{576B3446-89FC-40F3-9AD3-5C86E964FE13}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{576B3446-89FC-40F3-9AD3-5C86E964FE13}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{576B3446-89FC-40F3-9AD3-5C86E964FE13}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6083A16D-DAAD-47F9-AFC7-4EE9951F8A79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6083A16D-DAAD-47F9-AFC7-4EE9951F8A79}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6083A16D-DAAD-47F9-AFC7-4EE9951F8A79}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6083A16D-DAAD-47F9-AFC7-4EE9951F8A79}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

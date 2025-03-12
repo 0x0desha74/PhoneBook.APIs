@@ -32,7 +32,7 @@ namespace PhoneBook.APIs
             {
                 var context = services.GetRequiredService<ApplicationDbContext>();
                 await context.Database.MigrateAsync();
-
+                await ApplicationDbContextSeed.SeedData(context);
             }
             catch (Exception ex)
             {

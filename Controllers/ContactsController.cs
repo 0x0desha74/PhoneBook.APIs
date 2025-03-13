@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using PhoneBook.APIs.DTOs;
 using PhoneBook.Core.Entities;
 using PhoneBook.Core.Repositories;
+using PhoneBook.Core.Specifications;
 
 namespace PhoneBook.APIs.Controllers
 {
@@ -22,14 +23,16 @@ namespace PhoneBook.APIs.Controllers
         [HttpGet]
         public async Task<ActionResult<IReadOnlyList<Contact>>> GetContacts()
         {
-            var contacts = await _unitOfWork.Repository<Contact>().GetAllAsync();
+            var spec = new ContactWithAddressSpecifications();
+            var contacts = await _unitOfWork.Repository<Contact>().GetAllWithSpecAsync(spec);
             return Ok(contacts);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<IReadOnlyList<Contact>>> GetContact(int id)
         {
-            var contact = await _unitOfWork.Repository<Contact>().GetByIdAsync(id);
+            var spec = new ContactWithAddressSpecifications(id);
+            var contact = await _unitOfWork.Repository<Contact>().GetEntityWithSpecAsync(spec);
             if (contact is null) return NotFound();
             return Ok(contact);
         }

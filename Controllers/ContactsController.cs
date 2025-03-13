@@ -20,6 +20,15 @@ namespace PhoneBook.APIs.Controllers
             _mapper = mapper;
         }
 
+
+
+        [HttpGet("search")]
+        public async Task<ActionResult<IReadOnlyList<Contact>>> Search(string? query)
+        {
+            var contacts = await _unitOfWork.ContactRepository.SearchAsync(query);
+            return Ok(contacts);
+        }
+
         [HttpGet]
         public async Task<ActionResult<IReadOnlyList<Contact>>> GetContacts()
         {
@@ -36,7 +45,6 @@ namespace PhoneBook.APIs.Controllers
             if (contact is null) return NotFound();
             return Ok(contact);
         }
-
 
         [HttpPost]
         public async Task<ActionResult<Contact>> Create(ContactDto model)

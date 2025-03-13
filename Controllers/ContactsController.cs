@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PhoneBook.APIs.DTOs;
@@ -21,7 +22,7 @@ namespace PhoneBook.APIs.Controllers
         }
 
 
-
+        [Authorize(Roles="Admin")]
         [HttpGet("search")]
         public async Task<ActionResult<IReadOnlyList<Contact>>> Search(string? query)
         {
@@ -46,6 +47,7 @@ namespace PhoneBook.APIs.Controllers
             return Ok(contact);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<ActionResult<Contact>> Create(ContactDto model)
         {
@@ -56,6 +58,8 @@ namespace PhoneBook.APIs.Controllers
             return BadRequest();
         }
 
+
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<ActionResult<SuccessfullyMessageDto>> Delete(int id)
         {
@@ -66,6 +70,8 @@ namespace PhoneBook.APIs.Controllers
             return BadRequest();
         }
 
+
+        [Authorize(Roles = "Admin")]
         [HttpPut]
         public async Task<ActionResult<Contact>> Update(Contact model)
         {

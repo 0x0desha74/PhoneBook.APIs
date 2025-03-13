@@ -1,7 +1,10 @@
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using PhoneBook.APIs.Helpers;
+using PhoneBook.Core.Repositories;
 using PhoneBook.Repository.Data;
+using PhoneBook.Repository.Repositories;
 using System.Threading.Tasks;
 
 namespace PhoneBook.APIs
@@ -18,6 +21,8 @@ namespace PhoneBook.APIs
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
+            builder.Services.AddAutoMapper(typeof(MappingProfiles));
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
             {
                 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection String Not Found");

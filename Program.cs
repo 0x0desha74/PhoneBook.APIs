@@ -1,9 +1,13 @@
 
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using PhoneBook.APIs.Extensions;
 using PhoneBook.APIs.Helpers;
+using PhoneBook.Core.Entities.Identity;
 using PhoneBook.Core.Repositories;
 using PhoneBook.Repository.Data;
+using PhoneBook.Repository.Identity;
 using PhoneBook.Repository.Repositories;
 using System.Threading.Tasks;
 
@@ -19,13 +23,19 @@ namespace PhoneBook.APIs
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
-            builder.Services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
-            builder.Services.AddAutoMapper(typeof(MappingProfiles));
+            builder.Services.AddApplicationServices();
+            builder.Services.AddSwaggerServices();
+            builder.Services.AddIdentityServices(builder.Configuration);
+            
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
             {
                 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection String Not Found");
+                options.UseNpgsql(connectionString);
+            });
+
+            builder.Services.AddDbContext<AppIdentityDbContext>(options =>
+            {
+                var connectionString = builder.Configuration.GetConnectionString("IdentityConnection") ?? throw new InvalidOperationException("Connection String Not Found");
                 options.UseNpgsql(connectionString);
             });
             var app = builder.Build();
@@ -38,6 +48,16 @@ namespace PhoneBook.APIs
                 var context = services.GetRequiredService<ApplicationDbContext>();
                 await context.Database.MigrateAsync();
                 await ApplicationDbContextSeed.SeedData(context);
+
+                var identityContext = services.GetRequiredService<AppIdentityDbContext>();
+                await identityContext.Database.MigrateAsync();
+
+                var userManager = services.GetRequiredService<UserManager<AppUser>>();
+                await AppIdentityDbContextSeed.UserSeedAsync(userManager);
+
+                var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+                await AppIdentityDbContextSeed.RoleSeedAsync(roleManager);
+
             }
             catch (Exception ex)
             {
@@ -50,13 +70,13 @@ namespace PhoneBook.APIs
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
-                app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerMiddlewares();
             }
 
             app.UseHttpsRedirection();
 
-            //app.UseAuthorization();
+            app.UseAuthorization();
+            app.UseAuthentication();
 
 
             app.MapControllers();

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using PhoneBook.APIs.DTOs;
@@ -61,6 +62,52 @@ namespace PhoneBook.APIs.Controllers
                 Email = user.Email,
                 Token = await _tokenService.CreateTokenAsync(user, _userManager)
             });
+        }
+        [Authorize(Roles = "Admin")]
+        [HttpPost("assign-role")]
+        public async Task<ActionResult<string>> AssignRole(AssignRoleDto model)
+        {
+            AppUser user = null;
+            if (!string.IsNullOrEmpty(model.Id))
+                user = await _userManager.FindByIdAsync(model.Id);
+
+            if (!string.IsNullOrEmpty(model.Email))
+                user = await _userManager.FindByEmailAsync(model.Email);
+
+            if (user is null) return NotFound(new ApiResponse(404, "User not found"));
+
+            if (!await _roleManager.RoleExistsAsync(model.Role))
+                return BadRequest(new ApiResponse(400, "Role is not existed"));
+
+            var result = await _userManager.AddToRoleAsync(user, model.Role);
+
+            if (!result.Succeeded) return BadRequest(new ApiResponse(400));
+            return Ok($"Role {model.Role} is assigned to the user");
+        }
+
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet("get-role")]
+        public async Task<ActionResult<RoleDto>> GetRoles(BaseRoleDto model)
+        {
+            AppUser user = null;
+            if (!string.IsNullOrEmpty(model.Id))
+                user = await _userManager.FindByIdAsync(model.Id);
+
+            if (!string.IsNullOrEmpty(model.Email))
+                user = await _userManager.FindByEmailAsync(model.Email);
+
+            if (user is null) return NotFound(new ApiResponse(404, "User not found"));
+
+            var roles = await _userManager.GetRolesAsync(user);
+
+            return Ok(new RoleDto()
+            {
+                Email = user.Email,
+                Id = user.Id,
+                Roles = roles
+            });
+
         }
 
         [HttpGet("emailexists")]

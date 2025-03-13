@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using PhoneBook.APIs.Extensions;
 using PhoneBook.APIs.Helpers;
+using PhoneBook.APIs.Middlewares;
 using PhoneBook.Core.Entities.Identity;
 using PhoneBook.Core.Repositories;
 using PhoneBook.Repository.Data;
@@ -40,21 +41,27 @@ namespace PhoneBook.APIs
             });
             var app = builder.Build();
 
+
+
             var scope = app.Services.CreateScope();
             var services = scope.ServiceProvider;
             var loggerFactory = services.GetRequiredService<ILoggerFactory>();
             try
             {
+                //Apply ApplicationDbContext Migrations
                 var context = services.GetRequiredService<ApplicationDbContext>();
                 await context.Database.MigrateAsync();
                 await ApplicationDbContextSeed.SeedData(context);
 
+                //Apply ApplicationIdentityDbContext Migrations
                 var identityContext = services.GetRequiredService<AppIdentityDbContext>();
                 await identityContext.Database.MigrateAsync();
 
+                //Seeding User Data
                 var userManager = services.GetRequiredService<UserManager<AppUser>>();
                 await AppIdentityDbContextSeed.UserSeedAsync(userManager);
 
+                //Seeding Role Data
                 var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
                 await AppIdentityDbContextSeed.RoleSeedAsync(roleManager);
 
@@ -67,6 +74,7 @@ namespace PhoneBook.APIs
             }
 
 
+            app.UseMiddleware<ExceptionMiddleware>();
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
@@ -74,11 +82,9 @@ namespace PhoneBook.APIs
             }
 
             app.UseHttpsRedirection();
-
             app.UseAuthorization();
             app.UseAuthentication();
-
-
+            app.UseStatusCodePagesWithReExecute("/errors/{0}");
             app.MapControllers();
 
             app.Run();
